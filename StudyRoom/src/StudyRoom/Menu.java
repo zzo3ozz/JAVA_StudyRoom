@@ -3,15 +3,13 @@ package StudyRoom;
 import java.util.Scanner;
 
 public class Menu {
-	
-	public static void main(String[] args) {
-		Management manager = new Management();
-		
+	static void print_menu(Management manager)
+	{
 		System.out.println("[LaLaLa StudyRoom]");
-		System.out.println("1.����");
-		System.out.println("2.����");
-		System.out.println("3.������");
-		System.out.println("4.����");
+		System.out.println("1.입장");
+		System.out.println("2.퇴장");
+		System.out.println("3.관리자");
+		System.out.println("4.종료");
 		System.out.print("-->");
 		Scanner scanner = new Scanner(System.in);
 		
@@ -23,9 +21,18 @@ public class Menu {
 		else if (num == 3)
 			manager.admin();
 		else
-			System.exit(0);
-		
+		{
+			System.out.println("번호를 잘못 입력하셨습니다.\n");
+			print_menu(manager);
+		}
 		scanner.close();
+	}
+	
+	
+	
+	public static void main(String[] args) {
+		Management manager = new Management();
+		print_menu(manager);
 	}
 
 }
