@@ -2,18 +2,19 @@ package StudyRoom;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Management {
 	private int currentNo;
-	Customer cst[]=new Customer[10];
+	ArrayList<Customer> cst = new ArrayList<Customer>(10);
 	SeatManage setMan = new SeatManage();
+	Payment pay = new Payment();
+	String foodList[][] = {{"샌드위치", "5000"}, {"김치볶음밥", "6500"}, {"핫도그", "3000"}, {"아이스아메리카노", "2500"},
+							{"콜라, 사이다", "1500"}, {"아이스크림", "1200"}, {"생수", "800"}};
+	final int foodName = 0, foodPrice = 1;
 	
 	Management() {
 		currentNo = -1;
-		for(int i = 0; i < 10; i++) {
-			cst[i] = new Customer("blank");
-			cst[i].seatID = 0;
-		}
 	}
 
 	void print_menu()
@@ -21,8 +22,9 @@ public class Management {
 		System.out.println("[LaLaLa StudyRoom]");
 		System.out.println("1.입장");
 		System.out.println("2.퇴장");
-		System.out.println("3.관리자");
-		System.out.println("4.종료");
+		System.out.println("3.음식주문");
+		System.out.println("4.관리자");
+		System.out.println("5.종료");
 		System.out.print("-->");
 		
 		Scanner scanner = new Scanner(System.in);
@@ -34,8 +36,10 @@ public class Management {
 			else if (num == 2)
 				setOut();	
 			else if (num == 3)
-				admin();
+				orderFood();
 			else if (num == 4)
+				admin();
+			else if (num == 5)
 			{
 				scanner.close();
 				System.out.println("프로그램을 종료합니다.");
@@ -56,7 +60,6 @@ public class Management {
 
 	}
 	
-	
 	void setIn() {
 		System.out.print("이름을 입력하세요: ");
 		Scanner scanner = new Scanner(System.in);
@@ -71,23 +74,22 @@ public class Management {
 		if(setMan.setSeat(seatNum/10, seatNum%10))
 		{
 			System.out.println("선택되었습니다.");
-			nowCustomer.seatID = seatNum; 
-			cst[++currentNo] = nowCustomer;
+			nowCustomer.seatID = seatNum;
+			cst.add(nowCustomer);
+			++currentNo;
 		}
 		print_menu();
 	}
 	
 	void setOut() {
-		for(int i = 0; i < 10; i++)
-			System.out.println(cst[i].name);
 		int seatID = 0;
 		while(seatID == 0) {
 			System.out.print("이름을 입력하세요: ");
 			Scanner scanner = new Scanner(System.in);
 			String name = scanner.next();
 			for(int i = 0; i < 10; i++) {
-				if(name.equals(cst[i].name)) {
-					seatID = cst[i].seatID;
+				if(name.equals(cst.get(i).name)) {
+					seatID = cst.get(i).seatID;
 					break;
 				}
 			}
@@ -124,12 +126,53 @@ public class Management {
 			setMan.clear();
 			System.out.println("모든 좌석이 해제되었습니다.");
 			currentNo = -1;
-			for(int i = 0; i < 10; i++) {
-				cst[i] = new Customer("blank");
-				cst[i].seatID = 0;
-			}
-				
+			cst.clear();
 		}
 		print_menu();
 	}
+
+	void orderFood() {
+		int seatID = 0;
+		int cstIndex = -1;
+		while(seatID == 0) {
+			System.out.print("좌석번호를 입력하세요: ");
+			Scanner scanner = new Scanner(System.in);
+			int temp = scanner.nextInt();
+			for(int i = 0; i < 10; i++) {
+				if(temp == cst.get(i).seatID) {
+					seatID = cst.get(i).seatID;
+					cstIndex = i;
+					break;
+				}
+			}
+			if (seatID == 0) { //입력한 좌석이 비었을 경우
+				System.out.println("빈 좌석입니다. 좌석 번호를 다시 입력해주십시오.");
+			} else
+				break;
+		}
+		for(int i = 0; i < 7; i++) {
+			System.out.println((i + 1) + ": " + foodList[i][foodName] + '\t' + foodList[i][foodPrice]);
+		}
+		int total = 0;
+		int input;
+		while(true) {
+			System.out.print("원하는 메뉴의 번호를 한 번에 하나씩입력하세요(그만 주문하시려면 99 입력):");
+			Scanner scanner = new Scanner(System.in);
+			input = scanner.nextInt();
+			if(input < 8 && input > 0) {
+				input -= 1; //foodList의 인덱스는 0부터 시작하므로
+				System.out.println(foodList[input][foodName] + " 선택: " + foodList[input][foodPrice] + "원");
+				total += Integer.parseInt(foodList[input][foodPrice]);
+			} else if (input == 99) {
+				break;
+			} else {
+				System.out.println("번호를 잘못 입력하셨습니다. 다시 입력해주십시오.");
+			}
+		}
+		System.out.println("총 금액: " + total + "원");
+		cst.get(cstIndex).foodPay += total;
+		System.out.println(cst.get(cstIndex).foodPay);
+	}
+
+
 }
