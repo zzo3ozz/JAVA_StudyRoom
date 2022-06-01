@@ -33,7 +33,7 @@ public class SeatManage{
 	
 	boolean setSeat(int x, int y) {
 		if(setTable[x - 1][y - 1]) {
-			System.out.println("�̹� ��� �� �Դϴ�.");
+			System.out.println("이미 사용 중 입니다.");
 			return false;
 		}
 		else {
